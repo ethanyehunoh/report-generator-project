@@ -7,7 +7,7 @@ to practice file I/O, data manipulation, and report generation.
 """
 
 import csv
-
+import io
 
 def read_csv_file(filepath):
     """
@@ -16,14 +16,19 @@ def read_csv_file(filepath):
     # TODO: Your code here
     # Hint: Use csv.DictReader to read CSV files into dictionaries
     # Hint: Remember to use 'with open()' for proper file handling
-    pass
+    data = []
+    with io.open(filepath) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
+    return data
 
 
 def count_records(data_list):
     """Counts the number of records in a dataset."""
     # TODO: Your code here
     # Hint: Use the len() function
-    pass
+    return len(data_list)
 
 
 def get_unique_values(data_list, field_name):
@@ -31,7 +36,12 @@ def get_unique_values(data_list, field_name):
     # TODO: Your code here
     # Hint: Use a set to collect unique values
     # Hint: Convert the set to a list and sort it before returning
-    pass
+    new_sorted_set = set()
+    for record in data_list:
+        new_sorted_set.add(record[field_name])
+    new_sorted_list = list(new_sorted_set)
+    new_sorted_list.sort()
+    return new_sorted_list
 
 
 def filter_by_field(data_list, field_name, field_value):
@@ -39,8 +49,12 @@ def filter_by_field(data_list, field_name, field_value):
     # TODO: Your code here
     # Hint: Use a list comprehension to filter or a loop!
     # see here for more info: https://docs.python.org/3.13/tutorial/datastructures.html#list-comprehensions
-    pass
-
+    filtered_data_list = []
+    for record in data_list:
+        if record[field_name] == field_value:
+            filtered_data_list.append(record)
+    return filtered_data_list
+        
 
 def calculate_total(data_list, field_name):
     """Calculates the sum of a numeric field across all records."""
@@ -48,7 +62,10 @@ def calculate_total(data_list, field_name):
     # Hint: Initialize a total variable to 0
     # Hint: Loop through each record and add float(record[field_name]) to total
     # Hint: Remember to convert string values to float!
-    pass
+    total = 0
+    for record in data_list:
+        total += float(record[field_name])
+    return total
 
 
 def calculate_average(data_list, field_name):
@@ -56,15 +73,26 @@ def calculate_average(data_list, field_name):
     # TODO: Your code here
     # Hint: Use calculate_total() and count_records() functions
     # Hint: Average = total / count
-    pass
+    total = 0
+    for record in data_list:
+        total += float(record[field_name])
 
+    field_value = []
+    for record in data_list:
+        field_value.append(record[field_name])
 
+    average = total / len(field_value)
+    return average
+
+    
 def find_record_by_id(data_list, id_field, id_value):
     """Finds a specific record by its ID field."""
     # TODO: Your code here
     # Hint: Loop through data_list
     # Hint: Return the record when record[id_field] == id_value
-    pass
+    for record in data_list:
+        if record[id_field] == id_value:
+            return record
 
 
 def join_data(primary_list, secondary_list, primary_key, foreign_key):
@@ -76,14 +104,28 @@ def join_data(primary_list, secondary_list, primary_key, foreign_key):
     # Hint: Create a dictionary mapping secondary_list IDs to records
     # Hint: For each record in primary_list, look up the matching secondary record
     # Hint: Use dict.update() to merge dictionaries
-    pass
+    new_dictionary = {}
+    
+    for record in secondary_list:
+        new_dictionary[record[foreign_key]] = record
+
+    merged_data = []
+    for record in primary_list:
+        merged_record = record.copy()
+        key_value = record.get(primary_key)
+        if key_value in new_dictionary:
+            merged_record.update(new_dictionary[key_value])
+
+        merged_data.append(merged_record)
+    return merged_data
 
 
 def write_report_to_file(filepath, content):
     """Writes a text report to a file."""
     # TODO: Your code here
     # Hint: Use 'with open(filepath, 'w')' to open file for writing
-    pass
+    with io.open(filepath, "w")as f:
+        f.write(content)
 
 
 def format_header(title):
@@ -91,8 +133,9 @@ def format_header(title):
     # TODO: Your code here
     # Hint: Use "=" * 60 to create a line of equals signs
     # Hint: Use .center(60) to center the title
-    pass
-
+    line = "=" * 60
+    return f"{line}\n{title.center(60)}\n{line}"
+ 
 
 # Testing functions
 if __name__ == '__main__':
